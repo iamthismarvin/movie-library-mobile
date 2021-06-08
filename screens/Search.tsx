@@ -8,6 +8,7 @@ import {
   FlatList,
   Image,
   Button,
+  Pressable,
 } from 'react-native';
 
 const API_URL = 'http://10.0.2.2:3333';
@@ -64,19 +65,24 @@ const Movie = ({
   poster: string;
   type: string;
 }) => (
-  <View style={styles.itemContainer}>
-    <Image
-      style={styles.itemImage}
-      source={{
-        uri: `${poster}`,
-      }}
-    />
-    <View style={styles.itemTextContainer}>
-      <Text style={styles.itemTitle}>{title}</Text>
-      <Text>{year}</Text>
-      <Text>{type}</Text>
+  <Pressable
+    onPress={() => console.log(`Pressed on ${title}.`)}
+    onLongPress={() => console.log(`Holding press on ${title}.`)}
+    style={({pressed}) => [{backgroundColor: pressed ? 'red' : 'white'}]}>
+    <View style={styles.itemContainer}>
+      <Image
+        style={styles.itemImage}
+        source={{
+          uri: `${poster}`,
+        }}
+      />
+      <View style={styles.itemTextContainer}>
+        <Text style={styles.itemTitle}>{title}</Text>
+        <Text>{year}</Text>
+        <Text>{type}</Text>
+      </View>
     </View>
-  </View>
+  </Pressable>
 );
 
 const Search = () => {
@@ -96,17 +102,18 @@ const Search = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Search</Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeSearchValue}
           value={searchValue}
         />
-        <Button
-          onPress={() => getMoviesFromSearch(searchValue)}
-          title="Search"
-          color="#841584"
-        />
+        <View style={styles.searchButton}>
+          <Button
+            onPress={() => getMoviesFromSearch(searchValue)}
+            title="Search"
+            color="#841584"
+          />
+        </View>
       </View>
       <FlatList
         style={styles.list}
@@ -133,15 +140,16 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     padding: 12,
     width: '100%',
   },
   input: {
     backgroundColor: '#ddd',
     borderRadius: 12,
-    marginBottom: 12,
     paddingHorizontal: 12,
-    width: '100%',
+    width: '75%',
   },
   title: {
     fontWeight: 'bold',
@@ -149,8 +157,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   itemContainer: {
-    borderBottomColor: '#eee',
-    borderBottomWidth: 1,
     height: 100,
     flex: 1,
     flexDirection: 'row',
@@ -167,9 +173,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   itemTextContainer: {
-    marginLeft: 12,
+    marginLeft: 16,
+    maxWidth: '75%',
   },
   itemImage: {
+    borderRadius: 2,
     height: 75,
     width: 50,
   },
@@ -179,6 +187,9 @@ const styles = StyleSheet.create({
   },
   list: {
     width: '100%',
+  },
+  searchButton: {
+    width: '20%',
   },
 });
 
