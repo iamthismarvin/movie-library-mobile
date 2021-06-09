@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {SearchedMovie} from '../utilities/types';
 import {StyleSheet, View, TextInput, FlatList, Button} from 'react-native';
-import {getMoviesFromSearch} from '../utilities/requests';
+import {getMoviesFromSearchByTitle} from '../utilities/requests';
 import MovieListItem from '../components/MovieListItem';
 
 const Search = () => {
@@ -19,7 +19,7 @@ const Search = () => {
         <View style={styles.searchButton}>
           <Button
             onPress={async () => {
-              setMovies(await getMoviesFromSearch(searchValue));
+              setMovies(await getMoviesFromSearchByTitle(searchValue));
             }}
             title="Search"
             color="#841584"

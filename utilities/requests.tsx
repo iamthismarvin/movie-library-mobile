@@ -15,10 +15,10 @@ export const getMoviesFromLibrary = async () => {
   }
 };
 
-export const getMoviesFromSearch = async (title: string) => {
+export const getMoviesFromSearchByTitle = async (title: string) => {
   const parsedTitle = parseSearchText(title);
   try {
-    const response = await axios.get(`${API_URL}/search/${parsedTitle}`);
+    const response = await axios.get(`${API_URL}/omdb/title/${parsedTitle}`);
     return response.data;
   } catch (error) {
     console.error(error);
