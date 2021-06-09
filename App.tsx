@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import Home from './screens/Home';
 import Search from './screens/Search';
+import AddToLibrary from './screens/AddToLibrary';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -13,6 +14,11 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen
+          name="AddToLibrary"
+          component={AddToLibrary}
+          options={{title: 'Add to Library'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,36 +1,39 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-const MovieListItem = ({
-  title,
-  year,
-  poster,
-  type,
-}: {
+interface MovieListItemProps {
   title: string;
   year: number;
   poster: string;
   type: string;
-}) => (
-  <Pressable
-    onPress={() => console.log(`Pressed on ${title}.`)}
-    onLongPress={() => console.log(`Holding press on ${title}.`)}
-    style={({pressed}) => [{backgroundColor: pressed ? 'red' : 'white'}]}>
-    <View style={styles.container}>
-      <Image
-        style={styles.poster}
-        source={{
-          uri: `${poster}`,
-        }}
-      />
-      <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        <Text>{year}</Text>
-        <Text>{type}</Text>
+  imdbID: string;
+}
+
+const MovieListItem = (props: MovieListItemProps) => {
+  const navigation = useNavigation();
+
+  return (
+    <Pressable
+      onPress={() => navigation.navigate('AddToLibrary', {props})}
+      onLongPress={() => console.log(`Holding press on ${props.title}.`)}
+      style={({pressed}) => [{backgroundColor: pressed ? 'red' : 'white'}]}>
+      <View style={styles.container}>
+        <Image
+          style={styles.poster}
+          source={{
+            uri: `${props.poster}`,
+          }}
+        />
+        <View style={styles.content}>
+          <Text style={styles.title}>{props.title}</Text>
+          <Text>{props.year}</Text>
+          <Text>{props.type}</Text>
+        </View>
       </View>
-    </View>
-  </Pressable>
-);
+    </Pressable>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

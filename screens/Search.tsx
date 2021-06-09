@@ -35,6 +35,7 @@ const Search = () => {
             year={item.Year}
             poster={item.Poster}
             type={item.Type}
+            imdbID={item.imdbID}
           />
         )}
         keyExtractor={movie => movie.imdbID}
