@@ -1,38 +1,12 @@
-import axios from 'axios';
 import React, {useState} from 'react';
 import {SearchedMovie} from '../utilities/types';
 import {StyleSheet, View, TextInput, FlatList, Button} from 'react-native';
+import {getMoviesFromSearch} from '../utilities/requests';
 import MovieListItem from '../components/MovieListItem';
-
-const API_URL = 'http://10.0.2.2:3333';
-
-// const getMoviesFromLibrary = async () => {
-//   try {
-//     MOVIES = await axios.get(`${API_URL}/movies/`);
-//     // MOVIES = response;
-//     console.log(MOVIES);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-const parseSearchText = (text: string) => {
-  return text.replace(/ /g, '+');
-};
 
 const Search = () => {
   const [movies, setMovies] = useState([]);
   const [searchValue, onChangeSearchValue] = useState('');
-
-  const getMoviesFromSearch = async (title: string) => {
-    const parsedTitle = parseSearchText(title);
-    try {
-      const response = await axios.get(`${API_URL}/search/${parsedTitle}`);
-      setMovies(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -44,7 +18,9 @@ const Search = () => {
         />
         <View style={styles.searchButton}>
           <Button
-            onPress={() => getMoviesFromSearch(searchValue)}
+            onPress={async () => {
+              setMovies(await getMoviesFromSearch(searchValue));
+            }}
             title="Search"
             color="#841584"
           />
