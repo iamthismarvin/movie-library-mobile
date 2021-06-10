@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {getMoviesFromSearchByID} from '../utilities/requests';
 
 interface MovieListItemProps {
   title: string;
@@ -10,25 +11,35 @@ interface MovieListItemProps {
   imdbID: string;
 }
 
-const MovieListItem = (props: MovieListItemProps) => {
+const MovieListItem = ({
+  title,
+  year,
+  poster,
+  type,
+  imdbID,
+}: MovieListItemProps) => {
   const navigation = useNavigation();
 
   return (
     <Pressable
-      onPress={() => navigation.navigate('AddToLibrary', {props})}
-      onLongPress={() => console.log(`Holding press on ${props.title}.`)}
+      onPress={async () =>
+        navigation.navigate('AddToLibrary', {
+          props: await getMoviesFromSearchByID(imdbID),
+        })
+      }
+      onLongPress={() => console.log(`Holding press on ${title}.`)}
       style={({pressed}) => [{backgroundColor: pressed ? 'red' : 'white'}]}>
       <View style={styles.container}>
         <Image
           style={styles.poster}
           source={{
-            uri: `${props.poster}`,
+            uri: `${poster}`,
           }}
         />
         <View style={styles.content}>
-          <Text style={styles.title}>{props.title}</Text>
-          <Text>{props.year}</Text>
-          <Text>{props.type}</Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text>{year}</Text>
+          <Text>{type}</Text>
         </View>
       </View>
     </Pressable>

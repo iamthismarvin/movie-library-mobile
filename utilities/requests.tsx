@@ -24,3 +24,12 @@ export const getMoviesFromSearchByTitle = async (title: string) => {
     console.error(error);
   }
 };
+
+export const getMoviesFromSearchByID = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/omdb/id/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
