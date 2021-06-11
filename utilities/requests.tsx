@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {AddToLibraryMovie} from './types';
 
 const API_URL = 'http://10.0.2.2:3333';
 
@@ -29,6 +30,14 @@ export const getMoviesFromSearchByID = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/omdb/id/${id}`);
     return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const addMovieToLibrary = async (movie: AddToLibraryMovie) => {
+  try {
+    await axios.post(`${API_URL}/movies`, movie);
   } catch (error) {
     console.error(error);
   }

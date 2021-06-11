@@ -1,8 +1,11 @@
-export interface LibraryMovie {
-  id: 9;
+export interface LibraryMovie extends AddToLibraryMovie {
+  id: number;
   created_at: Date;
   updated_at: Date;
-  purchased_at: Date;
+}
+
+export interface AddToLibraryMovie {
+  purchased_at: Date | null;
   library_id: string;
   notes: string;
   info: {
@@ -14,6 +17,15 @@ export interface LibraryMovie {
     actors: string[];
     writer: string[];
     director: string[];
+    imdbID: string;
+    type: string;
+    runtime: number;
+  };
+  format: {
+    bluray_hd: boolean;
+    bluray_uhd: boolean;
+    digital: boolean;
+    dvd: boolean;
   };
 }
 
