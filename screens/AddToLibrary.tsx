@@ -12,7 +12,7 @@ import {
 import {TextInput} from 'react-native-gesture-handler';
 import CrewList from '../components/CrewList';
 import CheckboxWithText from '../components/CheckboxWithText';
-import {AddToLibraryMovie} from '../utilities/types';
+import {AddToLibraryMovie, OptionalMovieField} from '../utilities/types';
 import {addMovieToLibrary} from '../utilities/requests';
 
 const getArrayFromString = (list: string) => {
@@ -23,9 +23,10 @@ const AddToLibrary = ({route}) => {
   const {props} = route.params;
   const [modalIsVisible, setModalIsVisible] = useState(false);
 
-  const [notes, onChangeNotes] = useState('');
-  const [purchaseLocation, onChangePurchaseLocation] = useState('');
-  const [libraryID, onChangeLibraryID] = useState('');
+  const [notes, onChangeNotes] = useState<OptionalMovieField>('');
+  const [purchaseLocation, onChangePurchaseLocation] =
+    useState<OptionalMovieField>('');
+  const [libraryID, onChangeLibraryID] = useState<OptionalMovieField>('');
   const [formatHD, setFormatHD] = useState(false);
   const [formatUHD, setFormatUHD] = useState(false);
   const [formatDigital, setFormatDigital] = useState(false);
@@ -36,7 +37,7 @@ const AddToLibrary = ({route}) => {
   const writers = getArrayFromString(props.Writer);
   const actors = getArrayFromString(props.Actors);
 
-  const cancel = () => {
+  const clear = () => {
     setFormatHD(false);
     setFormatUHD(false);
     setFormatDigital(false);
@@ -49,8 +50,11 @@ const AddToLibrary = ({route}) => {
 
   const save = async () => {
     const movie: AddToLibraryMovie = {
-      purchased_at: null,
+      purchased_at: '2021-09-09',
+      purchase_location: purchaseLocation,
       library_id: libraryID,
+      imdb_id: props.imdbID,
+      type: props.Type,
       notes: notes,
       info: {
         plot: props.Plot,
@@ -61,8 +65,6 @@ const AddToLibrary = ({route}) => {
         actors: actors,
         writer: writers,
         director: directors,
-        imdbID: props.imdbID,
-        type: props.Type,
         runtime: props.Runtime,
       },
       format: {
@@ -74,6 +76,7 @@ const AddToLibrary = ({route}) => {
     };
     await addMovieToLibrary(movie);
     setModalIsVisible(false);
+    clear();
   };
 
   return (
@@ -129,7 +132,7 @@ const AddToLibrary = ({route}) => {
                 textAlignVertical="top"
               />
               <View style={styles.buttons}>
-                <Button title="Cancel" onPress={() => cancel()} />
+                <Button title="Cancel" onPress={() => clear()} />
                 <Button title="Add to Library" onPress={() => save()} />
               </View>
             </View>

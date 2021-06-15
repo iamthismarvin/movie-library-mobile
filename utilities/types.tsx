@@ -5,9 +5,12 @@ export interface LibraryMovie extends AddToLibraryMovie {
 }
 
 export interface AddToLibraryMovie {
-  purchased_at: Date | null;
-  library_id: string;
-  notes: string;
+  purchased_at: string | null;
+  purchase_location: string | null;
+  library_id: string | null;
+  imdb_id: string;
+  type: string;
+  notes: string | null;
   info: {
     plot: string;
     year: number;
@@ -17,9 +20,7 @@ export interface AddToLibraryMovie {
     actors: string[];
     writer: string[];
     director: string[];
-    imdbID: string;
-    type: string;
-    runtime: number;
+    runtime: string;
   };
   format: {
     bluray_hd: boolean;
@@ -36,3 +37,5 @@ export interface SearchedMovie {
   Type: string;
   Poster: string;
 }
+
+export type OptionalMovieField = string;
