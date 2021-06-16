@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   Image,
@@ -12,8 +12,16 @@ import {
 import {TextInput} from 'react-native-gesture-handler';
 import CrewList from '../components/CrewList';
 import CheckboxWithText from '../components/CheckboxWithText';
-import {AddToLibraryMovie, OptionalMovieField} from '../utilities/types';
-import {addMovieToLibrary} from '../utilities/requests';
+import {
+  AddToLibraryMovie,
+  LibraryMovie,
+  OptionalMovieField,
+} from '../utilities/types';
+import {
+  addMovieToLibrary,
+  getMoviesFromLibrary,
+  removeMovieFromLibrary,
+} from '../utilities/requests';
 
 const getArrayFromString = (list: string) => {
   return list.split(', ');
@@ -21,7 +29,8 @@ const getArrayFromString = (list: string) => {
 
 const AddToLibrary = ({route}) => {
   const {props} = route.params;
-  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [isModalActive, setIsModalActive] = useState(false);
+  const [isMovieInLibrary, setIsMovieInLibrary] = useState(true);
 
   const [notes, onChangeNotes] = useState<OptionalMovieField>('');
   const [purchaseLocation, onChangePurchaseLocation] =
@@ -42,7 +51,7 @@ const AddToLibrary = ({route}) => {
     setFormatUHD(false);
     setFormatDigital(false);
     setFormatDVD(false);
-    setModalIsVisible(false);
+    setIsModalActive(false);
     onChangeNotes('');
     onChangePurchaseLocation('');
     onChangeLibraryID('');
@@ -75,17 +84,63 @@ const AddToLibrary = ({route}) => {
       },
     };
     await addMovieToLibrary(movie);
-    setModalIsVisible(false);
+    setIsModalActive(false);
     clear();
   };
+
+  const removeFromLibrary = async () => {
+    await removeMovieFromLibrary(props.imdbID);
+    setIsModalActive(false);
+    setIsMovieInLibrary(false);
+  };
+
+  const findMovieInLibrary = async () => {
+    const movies = await getMoviesFromLibrary();
+    const result = movies.find(
+      (movie: LibraryMovie) => movie.imdb_id === props.imdbID,
+    )
+      ? true
+      : false;
+    setIsMovieInLibrary(result);
+  };
+
+  const MovieActionButtons = () => {
+    if (!isMovieInLibrary) {
+      return (
+        <Button
+          onPress={() => setIsModalActive(true)}
+          title={'Add to Library'}
+        />
+      );
+    } else {
+      return (
+        <View>
+          <Button
+            onPress={() => setIsModalActive(true)}
+            title={'Edit'}
+            color="purple"
+          />
+          <Button
+            onPress={() => removeFromLibrary()}
+            title={'Remove from Library'}
+            color="red"
+          />
+        </View>
+      );
+    }
+  };
+
+  useEffect(() => {
+    findMovieInLibrary();
+  });
 
   return (
     <ScrollView keyboardShouldPersistTaps="never">
       <KeyboardAvoidingView>
         <Modal
           transparent
-          visible={modalIsVisible}
-          onRequestClose={() => setModalIsVisible(false)}>
+          visible={isModalActive}
+          onRequestClose={() => setIsModalActive(false)}>
           <View style={styles.modalContainer}>
             <View style={styles.modal}>
               <Text>Library ID</Text>
@@ -143,10 +198,7 @@ const AddToLibrary = ({route}) => {
         <Text>{props.Year}</Text>
         <Text>{props.Runtime}</Text>
         <Text style={styles.plot}>{props.Plot}</Text>
-        <Button
-          onPress={() => setModalIsVisible(true)}
-          title={'Add to Library'}
-        />
+        <MovieActionButtons />
         <CrewList title="Director" data={directors} />
         <CrewList title="Writer" data={writers} />
         <CrewList title="Cast" data={actors} />
