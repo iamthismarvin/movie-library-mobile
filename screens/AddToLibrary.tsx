@@ -35,6 +35,7 @@ const AddToLibrary = ({route}) => {
   const [notes, onChangeNotes] = useState<OptionalMovieField>('');
   const [purchaseLocation, onChangePurchaseLocation] =
     useState<OptionalMovieField>('');
+  const [purchaseDate, setPurchaseDate] = useState<OptionalMovieField>('');
   const [libraryID, onChangeLibraryID] = useState<OptionalMovieField>('');
   const [formatHD, setFormatHD] = useState(false);
   const [formatUHD, setFormatUHD] = useState(false);
@@ -59,7 +60,7 @@ const AddToLibrary = ({route}) => {
 
   const save = async () => {
     const movie: AddToLibraryMovie = {
-      purchased_at: '2021-09-09',
+      purchased_at: purchaseDate,
       purchase_location: purchaseLocation,
       library_id: libraryID,
       imdb_id: props.imdbID,
@@ -117,6 +118,12 @@ const AddToLibrary = ({route}) => {
               onChangeText={onChangeLibraryID}
               value={libraryID}
             />
+            <Text>Purchase Date</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setPurchaseDate}
+              value={purchaseDate}
+            />
             <Text>Purchase Location</Text>
             <TextInput
               style={styles.input}
@@ -155,8 +162,8 @@ const AddToLibrary = ({route}) => {
               textAlignVertical="top"
             />
             <View style={styles.buttons}>
-              <Button title="Cancel" onPress={() => clear()} />
-              <Button title="Add to Library" onPress={() => save()} />
+              <Button title="Cancel" onPress={() => clear()} color="red" />
+              <Button title="Save" onPress={() => save()} />
             </View>
           </View>
         </View>
@@ -190,6 +197,40 @@ const AddToLibrary = ({route}) => {
     }
   };
 
+  const MovieExtraInfo = () => {
+    const getValueOrNA = (value: string) => {
+      return value ? value : '(N/A)';
+    };
+
+    if (isMovieInLibrary) {
+      return (
+        <View>
+          <Text style={styles.extraInfoTitle}>Library ID</Text>
+          <Text>{getValueOrNA(libraryID)}</Text>
+          <Text style={styles.extraInfoTitle}>Purchase Date</Text>
+          <Text>{getValueOrNA(purchaseDate)}</Text>
+          <Text style={styles.extraInfoTitle}>Purchase Location</Text>
+          <Text>{getValueOrNA(purchaseLocation)}</Text>
+          <Text style={styles.extraInfoTitle}>Notes</Text>
+          <Text>{getValueOrNA(notes)}</Text>
+          <Text style={styles.extraInfoTitle}>Format</Text>
+          <View>
+            <CheckboxWithText title="Blu-ray" value={formatHD} isDisabled />
+            <CheckboxWithText title="Blu-ray 4K" value={formatUHD} isDisabled />
+            <CheckboxWithText
+              title="Digital"
+              value={formatDigital}
+              isDisabled
+            />
+            <CheckboxWithText title="DVD" value={formatDVD} isDisabled />
+          </View>
+        </View>
+      );
+    } else {
+      return <View />;
+    }
+  };
+
   useEffect(() => {
     findMovieInLibrary();
   });
@@ -204,6 +245,8 @@ const AddToLibrary = ({route}) => {
             <Text>{props.Title}</Text>
             <Text>{props.Year}</Text>
             <Text>{props.Runtime}</Text>
+            <Text>{props.Type}</Text>
+            <Text>{props.imdbID}</Text>
           </View>
         </View>
         <Text style={styles.plot}>{props.Plot}</Text>
@@ -211,8 +254,7 @@ const AddToLibrary = ({route}) => {
         <CrewList title="Director" data={directors} />
         <CrewList title="Writer" data={writers} />
         <CrewList title="Cast" data={actors} />
-        <Text>{props.Type}</Text>
-        <Text>{props.imdbID}</Text>
+        <MovieExtraInfo />
       </KeyboardAvoidingView>
     </ScrollView>
   );
@@ -246,6 +288,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#333333aa',
+  },
+  extraInfoTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
