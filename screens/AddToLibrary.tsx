@@ -85,7 +85,6 @@ const AddToLibrary = ({route}) => {
     };
     await addMovieToLibrary(movie);
     setIsModalActive(false);
-    clear();
   };
 
   const removeFromLibrary = async () => {
@@ -102,6 +101,67 @@ const AddToLibrary = ({route}) => {
       ? true
       : false;
     setIsMovieInLibrary(result);
+  };
+
+  const AddToLibraryModal = () => {
+    return (
+      <Modal
+        transparent
+        visible={isModalActive}
+        onRequestClose={() => setIsModalActive(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modal}>
+            <Text>Library ID</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeLibraryID}
+              value={libraryID}
+            />
+            <Text>Purchase Location</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangePurchaseLocation}
+              value={purchaseLocation}
+            />
+            <Text>Format</Text>
+            <View>
+              <CheckboxWithText
+                title="Blu-ray"
+                value={formatHD}
+                setFunction={setFormatHD}
+              />
+              <CheckboxWithText
+                title="Blu-ray 4K"
+                value={formatUHD}
+                setFunction={setFormatUHD}
+              />
+              <CheckboxWithText
+                title="Digital"
+                value={formatDigital}
+                setFunction={setFormatDigital}
+              />
+              <CheckboxWithText
+                title="DVD"
+                value={formatDVD}
+                setFunction={setFormatDVD}
+              />
+            </View>
+            <Text>Notes</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeNotes}
+              value={notes}
+              numberOfLines={5}
+              textAlignVertical="top"
+            />
+            <View style={styles.buttons}>
+              <Button title="Cancel" onPress={() => clear()} />
+              <Button title="Add to Library" onPress={() => save()} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const MovieActionButtons = () => {
@@ -137,66 +197,15 @@ const AddToLibrary = ({route}) => {
   return (
     <ScrollView keyboardShouldPersistTaps="never">
       <KeyboardAvoidingView>
-        <Modal
-          transparent
-          visible={isModalActive}
-          onRequestClose={() => setIsModalActive(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modal}>
-              <Text>Library ID</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeLibraryID}
-                value={libraryID}
-              />
-              <Text>Purchase Location</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangePurchaseLocation}
-                value={purchaseLocation}
-              />
-              <Text>Format</Text>
-              <View>
-                <CheckboxWithText
-                  title="Blu-ray"
-                  value={formatHD}
-                  setFunction={setFormatHD}
-                />
-                <CheckboxWithText
-                  title="Blu-ray 4K"
-                  value={formatUHD}
-                  setFunction={setFormatUHD}
-                />
-                <CheckboxWithText
-                  title="Digital"
-                  value={formatDigital}
-                  setFunction={setFormatDigital}
-                />
-                <CheckboxWithText
-                  title="DVD"
-                  value={formatDVD}
-                  setFunction={setFormatDVD}
-                />
-              </View>
-              <Text>Notes</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={onChangeNotes}
-                value={notes}
-                numberOfLines={5}
-                textAlignVertical="top"
-              />
-              <View style={styles.buttons}>
-                <Button title="Cancel" onPress={() => clear()} />
-                <Button title="Add to Library" onPress={() => save()} />
-              </View>
-            </View>
+        <AddToLibraryModal />
+        <View>
+          <Image style={styles.poster} source={{uri: props.Poster}} />
+          <View>
+            <Text>{props.Title}</Text>
+            <Text>{props.Year}</Text>
+            <Text>{props.Runtime}</Text>
           </View>
-        </Modal>
-        <Image style={styles.poster} source={{uri: props.Poster}} />
-        <Text>{props.Title}</Text>
-        <Text>{props.Year}</Text>
-        <Text>{props.Runtime}</Text>
+        </View>
         <Text style={styles.plot}>{props.Plot}</Text>
         <MovieActionButtons />
         <CrewList title="Director" data={directors} />
