@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {AddToLibraryMovie} from './types';
+import {AddToLibraryMovie, LibraryMovie} from './types';
 
 const API_URL = 'http://10.0.2.2:3333';
 
@@ -38,6 +38,16 @@ export const getMoviesFromSearchByID = async (id: string) => {
 export const addMovieToLibrary = async (movie: AddToLibraryMovie) => {
   try {
     await axios.post(`${API_URL}/movies`, movie);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const removeMovieFromLibrary = async (id: string) => {
+  try {
+    const movies = await getMoviesFromLibrary();
+    const movie = movies.find((m: LibraryMovie) => m.imdb_id === id);
+    await axios.delete(`${API_URL}/movies/${movie.id}`);
   } catch (error) {
     console.error(error);
   }
