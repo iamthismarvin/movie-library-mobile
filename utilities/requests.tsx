@@ -52,3 +52,13 @@ export const removeMovieFromLibrary = async (id: string) => {
     console.error(error);
   }
 };
+
+export const getMovieFromLibrary = async (id: string) => {
+  try {
+    const movies = await getMoviesFromLibrary();
+    const movie = movies.find((m: LibraryMovie) => m.imdb_id === id);
+    return movie;
+  } catch (error) {
+    console.error(error);
+  }
+};

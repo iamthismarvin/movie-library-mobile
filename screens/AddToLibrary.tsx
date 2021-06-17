@@ -23,59 +23,71 @@ import {
   removeMovieFromLibrary,
 } from '../utilities/requests';
 
-const getArrayFromString = (list: string) => {
-  return list.split(', ');
+const getStringFromNull = (value: string | null) => {
+  return value === null ? '' : value;
+};
+
+const getNullFromEmpty = (value: string | null) => {
+  return value === '' ? null : value;
 };
 
 const AddToLibrary = ({route}) => {
   const {props} = route.params;
+  const [libraryMovie, setLibraryMovie] = useState<AddToLibraryMovie>({
+    ...props,
+  });
+
   const [isModalActive, setIsModalActive] = useState(false);
   const [isMovieInLibrary, setIsMovieInLibrary] = useState(true);
 
-  const [notes, onChangeNotes] = useState<OptionalMovieField>('');
+  const [notes, onChangeNotes] = useState<OptionalMovieField>(
+    libraryMovie.notes,
+  );
   const [purchaseLocation, onChangePurchaseLocation] =
-    useState<OptionalMovieField>('');
-  const [purchaseDate, setPurchaseDate] = useState<OptionalMovieField>('');
-  const [libraryID, onChangeLibraryID] = useState<OptionalMovieField>('');
-  const [formatHD, setFormatHD] = useState(false);
-  const [formatUHD, setFormatUHD] = useState(false);
-  const [formatDigital, setFormatDigital] = useState(false);
-  const [formatDVD, setFormatDVD] = useState(false);
-
-  const genres = getArrayFromString(props.Genre);
-  const directors = getArrayFromString(props.Director);
-  const writers = getArrayFromString(props.Writer);
-  const actors = getArrayFromString(props.Actors);
+    useState<OptionalMovieField>(libraryMovie.purchase_location);
+  const [purchaseDate, setPurchaseDate] = useState<OptionalMovieField>(
+    libraryMovie.purchased_at,
+  );
+  const [libraryID, onChangeLibraryID] = useState<OptionalMovieField>(
+    libraryMovie.library_id,
+  );
+  const [formatHD, setFormatHD] = useState(libraryMovie.format.bluray_hd);
+  const [formatUHD, setFormatUHD] = useState(libraryMovie.format.bluray_uhd);
+  const [formatDigital, setFormatDigital] = useState(
+    libraryMovie.format.digital,
+  );
+  const [formatDVD, setFormatDVD] = useState(libraryMovie.format.dvd);
 
   const clear = () => {
-    setFormatHD(false);
-    setFormatUHD(false);
-    setFormatDigital(false);
-    setFormatDVD(false);
+    setFormatHD(libraryMovie.format.bluray_hd);
+    setFormatUHD(libraryMovie.format.bluray_uhd);
+    setFormatDigital(libraryMovie.format.digital);
+    setFormatDVD(libraryMovie.format.dvd);
+    onChangeNotes(libraryMovie.notes);
+    onChangePurchaseLocation(libraryMovie.purchase_location);
+    onChangeLibraryID(libraryMovie.library_id);
+    setPurchaseDate(libraryMovie.purchased_at);
     setIsModalActive(false);
-    onChangeNotes('');
-    onChangePurchaseLocation('');
-    onChangeLibraryID('');
   };
 
   const save = async () => {
     const movie: AddToLibraryMovie = {
-      purchased_at: purchaseDate,
-      purchase_location: purchaseLocation,
-      library_id: libraryID,
-      imdb_id: props.imdbID,
-      type: props.Type,
-      notes: notes,
+      purchased_at: getNullFromEmpty(purchaseDate),
+      purchase_location: getNullFromEmpty(purchaseLocation),
+      library_id: getNullFromEmpty(libraryID),
+      imdb_id: libraryMovie.imdb_id,
+      type: libraryMovie.type,
+      notes: getNullFromEmpty(notes),
       info: {
-        plot: props.Plot,
-        year: props.Year,
-        cover: props.Poster,
-        genre: genres,
-        title: props.Title,
-        actors: actors,
-        writer: writers,
-        director: directors,
-        runtime: props.Runtime,
+        plot: libraryMovie.info.plot,
+        year: libraryMovie.info.year,
+        cover: libraryMovie.info.cover,
+        genre: libraryMovie.info.genre,
+        title: libraryMovie.info.title,
+        actors: libraryMovie.info.actors,
+        writer: libraryMovie.info.writer,
+        director: libraryMovie.info.director,
+        runtime: libraryMovie.info.runtime,
       },
       format: {
         bluray_hd: formatHD,
@@ -84,12 +96,13 @@ const AddToLibrary = ({route}) => {
         dvd: formatDVD,
       },
     };
+    setLibraryMovie({...movie});
     await addMovieToLibrary(movie);
     setIsModalActive(false);
   };
 
   const removeFromLibrary = async () => {
-    await removeMovieFromLibrary(props.imdbID);
+    await removeMovieFromLibrary(libraryMovie.imdb_id);
     setIsModalActive(false);
     setIsMovieInLibrary(false);
   };
@@ -97,7 +110,7 @@ const AddToLibrary = ({route}) => {
   const findMovieInLibrary = async () => {
     const movies = await getMoviesFromLibrary();
     const result = movies.find(
-      (movie: LibraryMovie) => movie.imdb_id === props.imdbID,
+      (movie: LibraryMovie) => movie.imdb_id === libraryMovie.imdb_id,
     )
       ? true
       : false;
@@ -116,19 +129,19 @@ const AddToLibrary = ({route}) => {
             <TextInput
               style={styles.input}
               onChangeText={onChangeLibraryID}
-              value={libraryID}
+              value={getStringFromNull(libraryID)}
             />
             <Text>Purchase Date</Text>
             <TextInput
               style={styles.input}
               onChangeText={setPurchaseDate}
-              value={purchaseDate}
+              value={getStringFromNull(purchaseDate)}
             />
             <Text>Purchase Location</Text>
             <TextInput
               style={styles.input}
               onChangeText={onChangePurchaseLocation}
-              value={purchaseLocation}
+              value={getStringFromNull(purchaseLocation)}
             />
             <Text>Format</Text>
             <View>
@@ -157,7 +170,7 @@ const AddToLibrary = ({route}) => {
             <TextInput
               style={styles.input}
               onChangeText={onChangeNotes}
-              value={notes}
+              value={getStringFromNull(notes)}
               numberOfLines={5}
               textAlignVertical="top"
             />
@@ -198,7 +211,7 @@ const AddToLibrary = ({route}) => {
   };
 
   const MovieExtraInfo = () => {
-    const getValueOrNA = (value: string) => {
+    const getValueOrNA = (value: string | null) => {
       return value ? value : '(N/A)';
     };
 
@@ -206,23 +219,35 @@ const AddToLibrary = ({route}) => {
       return (
         <View>
           <Text style={styles.extraInfoTitle}>Library ID</Text>
-          <Text>{getValueOrNA(libraryID)}</Text>
+          <Text>{getValueOrNA(libraryMovie.library_id)}</Text>
           <Text style={styles.extraInfoTitle}>Purchase Date</Text>
-          <Text>{getValueOrNA(purchaseDate)}</Text>
+          <Text>{getValueOrNA(libraryMovie.purchased_at)}</Text>
           <Text style={styles.extraInfoTitle}>Purchase Location</Text>
-          <Text>{getValueOrNA(purchaseLocation)}</Text>
+          <Text>{getValueOrNA(libraryMovie.purchase_location)}</Text>
           <Text style={styles.extraInfoTitle}>Notes</Text>
-          <Text>{getValueOrNA(notes)}</Text>
+          <Text>{getValueOrNA(libraryMovie.notes)}</Text>
           <Text style={styles.extraInfoTitle}>Format</Text>
           <View>
-            <CheckboxWithText title="Blu-ray" value={formatHD} isDisabled />
-            <CheckboxWithText title="Blu-ray 4K" value={formatUHD} isDisabled />
             <CheckboxWithText
-              title="Digital"
-              value={formatDigital}
+              title="Blu-ray"
+              value={libraryMovie.format.bluray_hd}
               isDisabled
             />
-            <CheckboxWithText title="DVD" value={formatDVD} isDisabled />
+            <CheckboxWithText
+              title="Blu-ray 4K"
+              value={libraryMovie.format.bluray_uhd}
+              isDisabled
+            />
+            <CheckboxWithText
+              title="Digital"
+              value={libraryMovie.format.digital}
+              isDisabled
+            />
+            <CheckboxWithText
+              title="DVD"
+              value={libraryMovie.format.dvd}
+              isDisabled
+            />
           </View>
         </View>
       );
@@ -240,20 +265,23 @@ const AddToLibrary = ({route}) => {
       <KeyboardAvoidingView>
         <AddToLibraryModal />
         <View>
-          <Image style={styles.poster} source={{uri: props.Poster}} />
+          <Image
+            style={styles.poster}
+            source={{uri: libraryMovie.info.cover}}
+          />
           <View>
-            <Text>{props.Title}</Text>
-            <Text>{props.Year}</Text>
-            <Text>{props.Runtime}</Text>
-            <Text>{props.Type}</Text>
-            <Text>{props.imdbID}</Text>
+            <Text>{libraryMovie.info.title}</Text>
+            <Text>{libraryMovie.info.year}</Text>
+            <Text>{libraryMovie.info.runtime}</Text>
+            <Text>{libraryMovie.type}</Text>
+            <Text>{libraryMovie.imdb_id}</Text>
           </View>
         </View>
-        <Text style={styles.plot}>{props.Plot}</Text>
+        <Text style={styles.plot}>{libraryMovie.info.plot}</Text>
         <MovieActionButtons />
-        <CrewList title="Director" data={directors} />
-        <CrewList title="Writer" data={writers} />
-        <CrewList title="Cast" data={actors} />
+        <CrewList title="Director" data={libraryMovie.info.director} />
+        <CrewList title="Writer" data={libraryMovie.info.writer} />
+        <CrewList title="Cast" data={libraryMovie.info.actors} />
         <MovieExtraInfo />
       </KeyboardAvoidingView>
     </ScrollView>

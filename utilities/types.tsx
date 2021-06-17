@@ -38,4 +38,4 @@ export interface SearchedMovie {
   Poster: string;
 }
 
-export type OptionalMovieField = string;
+export type OptionalMovieField = string | null;

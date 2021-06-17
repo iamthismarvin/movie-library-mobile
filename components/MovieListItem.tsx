@@ -1,7 +1,11 @@
 import React from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {getMoviesFromSearchByID} from '../utilities/requests';
+import {
+  getMovieFromLibrary,
+  getMoviesFromSearchByID,
+} from '../utilities/requests';
+import {AddToLibraryMovie} from '../utilities/types';
 
 interface MovieListItemProps {
   title: string;
@@ -10,6 +14,42 @@ interface MovieListItemProps {
   type: string;
   imdbID: string;
 }
+
+const getMovie = async (id: string) => {
+  const libraryMovie = await getMovieFromLibrary(id);
+  const apiMovie = await getMoviesFromSearchByID(id);
+
+  const getArrayFromString = (list: string) => {
+    return list.split(', ');
+  };
+
+  const fmtMovie: AddToLibraryMovie = {
+    purchased_at: null,
+    purchase_location: null,
+    library_id: null,
+    imdb_id: apiMovie.imdbID,
+    type: apiMovie.Type,
+    notes: null,
+    info: {
+      plot: apiMovie.Plot,
+      year: apiMovie.Year,
+      cover: apiMovie.Poster,
+      title: apiMovie.Title,
+      runtime: apiMovie.Runtime,
+      genre: getArrayFromString(apiMovie.Genre),
+      director: getArrayFromString(apiMovie.Director),
+      writer: getArrayFromString(apiMovie.Writer),
+      actors: getArrayFromString(apiMovie.Actors),
+    },
+    format: {
+      bluray_hd: false,
+      bluray_uhd: false,
+      digital: false,
+      dvd: false,
+    },
+  };
+  return libraryMovie ? libraryMovie : fmtMovie;
+};
 
 const MovieListItem = ({
   title,
@@ -24,7 +64,7 @@ const MovieListItem = ({
     <Pressable
       onPress={async () =>
         navigation.navigate('AddToLibrary', {
-          props: await getMoviesFromSearchByID(imdbID),
+          props: await getMovie(imdbID),
         })
       }
       onLongPress={() => console.log(`Holding press on ${title}.`)}
