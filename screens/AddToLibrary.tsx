@@ -58,7 +58,7 @@ const AddToLibrary = ({route}) => {
   );
   const [formatDVD, setFormatDVD] = useState(libraryMovie.format.dvd);
 
-  const clear = () => {
+  const cancel = () => {
     setFormatHD(libraryMovie.format.bluray_hd);
     setFormatUHD(libraryMovie.format.bluray_uhd);
     setFormatDigital(libraryMovie.format.digital);
@@ -67,6 +67,33 @@ const AddToLibrary = ({route}) => {
     onChangePurchaseLocation(libraryMovie.purchase_location);
     onChangeLibraryID(libraryMovie.library_id);
     setPurchaseDate(libraryMovie.purchased_at);
+    setIsModalActive(false);
+  };
+
+  const clear = () => {
+    setFormatHD(false);
+    setFormatUHD(false);
+    setFormatDigital(false);
+    setFormatDVD(false);
+    onChangeNotes(null);
+    onChangePurchaseLocation(null);
+    onChangeLibraryID(null);
+    setPurchaseDate(null);
+
+    setLibraryMovie({
+      ...libraryMovie,
+      notes: null,
+      purchase_location: null,
+      purchased_at: null,
+      library_id: null,
+      format: {
+        bluray_hd: false,
+        bluray_uhd: false,
+        digital: false,
+        dvd: false,
+      },
+    });
+
     setIsModalActive(false);
   };
 
@@ -105,6 +132,7 @@ const AddToLibrary = ({route}) => {
     await removeMovieFromLibrary(libraryMovie.imdb_id);
     setIsModalActive(false);
     setIsMovieInLibrary(false);
+    clear();
   };
 
   const findMovieInLibrary = async () => {
@@ -115,73 +143,6 @@ const AddToLibrary = ({route}) => {
       ? true
       : false;
     setIsMovieInLibrary(result);
-  };
-
-  const AddToLibraryModal = () => {
-    return (
-      <Modal
-        transparent
-        visible={isModalActive}
-        onRequestClose={() => setIsModalActive(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modal}>
-            <Text>Library ID</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeLibraryID}
-              value={getStringFromNull(libraryID)}
-            />
-            <Text>Purchase Date</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={setPurchaseDate}
-              value={getStringFromNull(purchaseDate)}
-            />
-            <Text>Purchase Location</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangePurchaseLocation}
-              value={getStringFromNull(purchaseLocation)}
-            />
-            <Text>Format</Text>
-            <View>
-              <CheckboxWithText
-                title="Blu-ray"
-                value={formatHD}
-                setFunction={setFormatHD}
-              />
-              <CheckboxWithText
-                title="Blu-ray 4K"
-                value={formatUHD}
-                setFunction={setFormatUHD}
-              />
-              <CheckboxWithText
-                title="Digital"
-                value={formatDigital}
-                setFunction={setFormatDigital}
-              />
-              <CheckboxWithText
-                title="DVD"
-                value={formatDVD}
-                setFunction={setFormatDVD}
-              />
-            </View>
-            <Text>Notes</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeNotes}
-              value={getStringFromNull(notes)}
-              numberOfLines={5}
-              textAlignVertical="top"
-            />
-            <View style={styles.buttons}>
-              <Button title="Cancel" onPress={() => clear()} color="red" />
-              <Button title="Save" onPress={() => save()} />
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
   };
 
   const MovieActionButtons = () => {
@@ -263,7 +224,6 @@ const AddToLibrary = ({route}) => {
   return (
     <ScrollView keyboardShouldPersistTaps="never">
       <KeyboardAvoidingView>
-        <AddToLibraryModal />
         <View>
           <Image
             style={styles.poster}
@@ -283,6 +243,68 @@ const AddToLibrary = ({route}) => {
         <CrewList title="Writer" data={libraryMovie.info.writer} />
         <CrewList title="Cast" data={libraryMovie.info.actors} />
         <MovieExtraInfo />
+        <Modal
+          transparent
+          visible={isModalActive}
+          onRequestClose={() => setIsModalActive(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <Text>Library ID</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeLibraryID}
+                value={getStringFromNull(libraryID)}
+              />
+              <Text>Purchase Date</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setPurchaseDate}
+                value={getStringFromNull(purchaseDate)}
+              />
+              <Text>Purchase Location</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangePurchaseLocation}
+                value={getStringFromNull(purchaseLocation)}
+              />
+              <Text>Format</Text>
+              <View>
+                <CheckboxWithText
+                  title="Blu-ray"
+                  value={formatHD}
+                  setFunction={setFormatHD}
+                />
+                <CheckboxWithText
+                  title="Blu-ray 4K"
+                  value={formatUHD}
+                  setFunction={setFormatUHD}
+                />
+                <CheckboxWithText
+                  title="Digital"
+                  value={formatDigital}
+                  setFunction={setFormatDigital}
+                />
+                <CheckboxWithText
+                  title="DVD"
+                  value={formatDVD}
+                  setFunction={setFormatDVD}
+                />
+              </View>
+              <Text>Notes</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeNotes}
+                value={getStringFromNull(notes)}
+                numberOfLines={5}
+                textAlignVertical="top"
+              />
+              <View style={styles.buttons}>
+                <Button title="Cancel" onPress={() => cancel()} color="red" />
+                <Button title="Save" onPress={() => save()} />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </KeyboardAvoidingView>
     </ScrollView>
   );
