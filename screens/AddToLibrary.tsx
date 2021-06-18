@@ -21,6 +21,7 @@ import {
   addMovieToLibrary,
   getMoviesFromLibrary,
   removeMovieFromLibrary,
+  updateMovieFromLibrary,
 } from '../utilities/requests';
 
 const getStringFromNull = (value: string | null) => {
@@ -124,7 +125,9 @@ const AddToLibrary = ({route}) => {
       },
     };
     setLibraryMovie({...movie});
-    await addMovieToLibrary(movie);
+    isMovieInLibrary
+      ? await updateMovieFromLibrary(libraryMovie.imdb_id, movie)
+      : await addMovieToLibrary(movie);
     setIsModalActive(false);
   };
 

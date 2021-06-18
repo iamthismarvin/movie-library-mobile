@@ -53,6 +53,19 @@ export const removeMovieFromLibrary = async (id: string) => {
   }
 };
 
+export const updateMovieFromLibrary = async (
+  id: string,
+  libraryMovie: AddToLibraryMovie,
+) => {
+  try {
+    const movies = await getMoviesFromLibrary();
+    const movie = movies.find((m: LibraryMovie) => m.imdb_id === id);
+    await axios.patch(`${API_URL}/movies/${movie.id}`, libraryMovie);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getMovieFromLibrary = async (id: string) => {
   try {
     const movies = await getMoviesFromLibrary();
