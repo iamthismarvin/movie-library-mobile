@@ -3,6 +3,7 @@ import React from 'react';
 import Home from './screens/Home';
 import Search from './screens/Search';
 import AddToLibrary from './screens/AddToLibrary';
+import Library from './screens/Library';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
@@ -19,6 +20,7 @@ const App = () => {
           component={AddToLibrary}
           options={{title: 'Add to Library'}}
         />
+        <Stack.Screen name="Library" component={Library} />
       </Stack.Navigator>
     </NavigationContainer>
   );

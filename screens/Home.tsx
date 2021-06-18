@@ -1,15 +1,21 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/core';
-import {Button} from 'react-native';
+import {Button, View} from 'react-native';
 
 const Home = () => {
   const navigation = useNavigation();
 
   return (
-    <Button
-      title="Go to Search"
-      onPress={() => navigation.navigate('Search')}
-    />
+    <View>
+      <Button
+        title="Go to Search"
+        onPress={() => navigation.navigate('Search')}
+      />
+      <Button
+        title="Go to Library"
+        onPress={() => navigation.navigate('Library')}
+      />
+    </View>
   );
 };
 
