@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {AddToLibraryMovie, LibraryMovie} from './types';
+import {AddToLibraryMovie, LibraryMovie, SearchedMovieInLibrary} from './types';
 
 const API_URL = 'http://10.0.2.2:3333';
 
@@ -20,7 +20,15 @@ export const getMoviesFromSearchByTitle = async (title: string) => {
   const parsedTitle = parseSearchText(title);
   try {
     const response = await axios.get(`${API_URL}/omdb/title/${parsedTitle}`);
-    return response.data;
+    const movies = response.data;
+    const moviesFromLibrary = await getMoviesFromLibrary();
+    movies.map((movie: SearchedMovieInLibrary) => {
+      const isMovieInLibrary = moviesFromLibrary.find(
+        (m: AddToLibraryMovie) => m.imdb_id === movie.imdbID,
+      );
+      isMovieInLibrary ? (movie.inLibrary = true) : (movie.inLibrary = false);
+    });
+    return movies;
   } catch (error) {
     console.error(error);
   }

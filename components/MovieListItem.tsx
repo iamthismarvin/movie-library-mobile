@@ -13,6 +13,7 @@ interface MovieListItemProps {
   poster: string;
   type: string;
   imdbID: string;
+  inLibrary: boolean;
 }
 
 const getMovie = async (id: string) => {
@@ -57,8 +58,17 @@ const MovieListItem = ({
   poster,
   type,
   imdbID,
+  inLibrary,
 }: MovieListItemProps) => {
   const navigation = useNavigation();
+
+  const MovieInLibraryStatus = () => {
+    if (inLibrary) {
+      return <Text>In Library</Text>;
+    } else {
+      return <View />;
+    }
+  };
 
   return (
     <Pressable
@@ -80,6 +90,7 @@ const MovieListItem = ({
           <Text style={styles.title}>{title}</Text>
           <Text>{year}</Text>
           <Text>{type}</Text>
+          <MovieInLibraryStatus />
         </View>
       </View>
     </Pressable>

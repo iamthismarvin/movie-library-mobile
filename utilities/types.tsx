@@ -38,4 +38,8 @@ export interface SearchedMovie {
   Poster: string;
 }
 
+export interface SearchedMovieInLibrary extends SearchedMovie {
+  inLibrary: boolean;
+}
+
 export type OptionalMovieField = string | null;

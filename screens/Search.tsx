@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {SearchedMovie} from '../utilities/types';
+import {SearchedMovieInLibrary} from '../utilities/types';
 import {StyleSheet, View, TextInput, FlatList, Button} from 'react-native';
 import {getMoviesFromSearchByTitle} from '../utilities/requests';
 import MovieListItem from '../components/MovieListItem';
@@ -29,13 +29,14 @@ const Search = () => {
       <FlatList
         style={styles.list}
         data={movies}
-        renderItem={({item}: {item: SearchedMovie}) => (
+        renderItem={({item}: {item: SearchedMovieInLibrary}) => (
           <MovieListItem
             title={item.Title}
             year={item.Year}
             poster={item.Poster}
             type={item.Type}
             imdbID={item.imdbID}
+            inLibrary={item.inLibrary}
           />
         )}
         keyExtractor={movie => movie.imdbID}
