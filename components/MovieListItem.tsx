@@ -18,38 +18,41 @@ interface MovieListItemProps {
 
 const getMovie = async (id: string) => {
   const libraryMovie = await getMovieFromLibrary(id);
-  const apiMovie = await getMoviesFromSearchByID(id);
 
-  const getArrayFromString = (list: string) => {
-    return list.split(', ');
-  };
-
-  const fmtMovie: AddToLibraryMovie = {
-    purchased_at: null,
-    purchase_location: null,
-    library_id: null,
-    imdb_id: apiMovie.imdbID,
-    type: apiMovie.Type,
-    notes: null,
-    info: {
-      plot: apiMovie.Plot,
-      year: apiMovie.Year,
-      cover: apiMovie.Poster,
-      title: apiMovie.Title,
-      runtime: apiMovie.Runtime,
-      genre: getArrayFromString(apiMovie.Genre),
-      director: getArrayFromString(apiMovie.Director),
-      writer: getArrayFromString(apiMovie.Writer),
-      actors: getArrayFromString(apiMovie.Actors),
-    },
-    format: {
-      bluray_hd: false,
-      bluray_uhd: false,
-      digital: false,
-      dvd: false,
-    },
-  };
-  return libraryMovie ? libraryMovie : fmtMovie;
+  if (libraryMovie) {
+    return libraryMovie;
+  } else {
+    const getArrayFromString = (list: string) => {
+      return list.split(', ');
+    };
+    const apiMovie = await getMoviesFromSearchByID(id);
+    const fmtMovie: AddToLibraryMovie = {
+      purchased_at: null,
+      purchase_location: null,
+      library_id: null,
+      imdb_id: apiMovie.imdbID,
+      type: apiMovie.Type,
+      notes: null,
+      info: {
+        plot: apiMovie.Plot,
+        year: apiMovie.Year,
+        cover: apiMovie.Poster,
+        title: apiMovie.Title,
+        runtime: apiMovie.Runtime,
+        genre: getArrayFromString(apiMovie.Genre),
+        director: getArrayFromString(apiMovie.Director),
+        writer: getArrayFromString(apiMovie.Writer),
+        actors: getArrayFromString(apiMovie.Actors),
+      },
+      format: {
+        bluray_hd: false,
+        bluray_uhd: false,
+        digital: false,
+        dvd: false,
+      },
+    };
+    return fmtMovie;
+  }
 };
 
 const MovieListItem = ({
